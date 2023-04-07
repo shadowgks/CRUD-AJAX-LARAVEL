@@ -38,7 +38,7 @@
             <div class="pb-4 py-6 bg-white dark:bg-gray-900">
                 <!-- Modal toggle -->
                 <div class="flex justify-center m-5">
-                    <button id="defaultModalButton" data-modal-toggle="defaultModal"
+                    <button id="defaultModalButton" data-modal-toggle="modal_add"
                         class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                         Create product
                     </button>
@@ -56,9 +56,12 @@
                         placeholder="Search for items">
                 </div>
             </div>
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <table class="table w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
+                        <th scope="col" class="px-6 py-3">
+                            #
+                        </th>
                         <th scope="col" class="px-6 py-3">
                             Product name
                         </th>
@@ -71,20 +74,30 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Apple MacBook Pro 17"
-                        </th>
-                        <td class="px-6 py-4">
-                            Silver
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                            <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
-                        </td>
-                    </tr>
+                    @foreach ($product as $key => $item)
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{$key+1}}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{$item->name}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{$item->price}}
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col-md-12">
+                    {{ $product->links('pagination::tailwind') }}
+                </div>
+            </div>
         </div>
     </div>
     @include('components.modal-add')
@@ -121,7 +134,11 @@
                         price: price
                     },
                     success: function(res) {
-                        // console.log(res);
+                        if (res.status == 'success') {
+                            $('.table').load(location.href+' .table');
+                            console.log($('#modal_add').modal('hide'));
+
+                        }
                     },
                     error: function(err) {
                         let error = err.responseJSON;

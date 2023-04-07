@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
+
 
 class ProductController extends Controller
 {
@@ -16,7 +15,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products');
+        $product = Product::paginate(5);
+        return view('/products', compact('product'));
     }
 
     /**
@@ -26,7 +26,6 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -38,6 +37,9 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         Product::create($request->all());
+        return response()->json([
+            'status' => 'success',
+        ]);
     }
 
     /**
