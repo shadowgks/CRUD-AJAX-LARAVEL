@@ -77,16 +77,16 @@
                     @foreach ($product as $key => $item)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{$key+1}}
+                                {{ $key + 1 }}
                             </th>
                             <td class="px-6 py-4">
-                                {{$item->name}}
+                                {{ $item->name }}
                             </td>
                             <td class="px-6 py-4">
-                                {{$item->price}}
+                                {{ $item->price }}
                             </td>
                             <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                <a href="#" data-id="{{ $item->id }}" data-name="{{ $item->name }}" data-price="{{ $item->price }}" data-modal-toggle="modal_update" class="edit_product font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                                 <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
                             </td>
                         </tr>
@@ -100,7 +100,14 @@
             </div>
         </div>
     </div>
+
+    {{-- B include Models --}}
     @include('components.modal-add')
+    @include('components.modal-update')
+    {{-- E include Models --}}
+
+
+    {{-- B script --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
 
     {{-- B jquery --}}
@@ -117,10 +124,9 @@
     </script>
     {{-- E X-CSRF-TOKEN documentaion laravel --}}
 
-
     <script>
         $(document).ready(function() {
-            // alert();
+            // create
             $(document).on('click', '.add_product', function(e) {
                 var name = $('#name').val();
                 var price = $('#price').val();
@@ -135,9 +141,49 @@
                     },
                     success: function(res) {
                         if (res.status == 'success') {
-                            $('.table').load(location.href+' .table');
+                            $('.table').load(location.href + ' .table');
                             console.log($('#modal_add').modal('hide'));
+                        }
+                    },
+                    error: function(err) {
+                        let error = err.responseJSON;
+                        $.each(error.errors, function(index, value) {
+                            $('#errMsgContainer').append('<span class="text-red-600">' + value + '</span><br>')
+                        })
+                    }
+                })
+            });
 
+            //edit
+            $(document).on('click', '.edit_product', function() {
+                let id = $(this).data('id');
+                let name = $(this).data('name');
+                let price = $(this).data('price');
+
+                $('#id_product').val(id);
+                $('#up_name').val(name);
+                $('#up_price').val(price);
+            });
+
+            // update
+            $(document).on('click', '.update_product', function(e) {
+                var id = $('#id_product').val();
+                var name = $('#up_name').val();
+                var price = $('#up_price').val();
+                // console.log(price);
+
+                $.ajax({
+                    url: "{{ route('products.update', '') }}/" + id,
+                    method: 'PUT',
+                    data: {
+                        id: id,
+                        name: name,
+                        price: price,
+                        // _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(res) {
+                        if (res.status == 'success') {
+                            $('.table').load(location.href + ' .table');
                         }
                     },
                     error: function(err) {
@@ -150,6 +196,7 @@
             });
         });
     </script>
+    {{-- E script --}}
 
 </body>
 
