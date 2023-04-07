@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
@@ -15,7 +16,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return view('products');
     }
 
     /**
@@ -34,9 +35,12 @@ class ProductController extends Controller
      * @param  \App\Http\Requests\StoreProductRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreProductRequest $request)
+    public function store(ProductRequest $request)
     {
-        //
+        $product = new Product();
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->save();
     }
 
     /**
@@ -68,7 +72,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         //
     }
