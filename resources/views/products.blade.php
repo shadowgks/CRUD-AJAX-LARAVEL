@@ -87,7 +87,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <a href="#" data-id="{{ $item->id }}" data-name="{{ $item->name }}" data-price="{{ $item->price }}" data-modal-toggle="modal_update" class="edit_product font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
+                                <a href="#" data-id="{{ $item->id }}" class="delete_product font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
                             </td>
                         </tr>
                     @endforeach
@@ -134,7 +134,7 @@
 
                 $.ajax({
                     url: "{{ route('products.store') }}",
-                    method: 'post',
+                    method: 'Post',
                     data: {
                         name: name,
                         price: price
@@ -193,6 +193,34 @@
                         })
                     }
                 })
+            });
+
+            // delete
+            $(document).on('click', '.delete_product', function(e) {
+                let id = $(this).data('id');
+
+                if (confirm("Are you sure!")) {
+                    $.ajax({
+                        url: "{{ route('products.destroy', '') }}/" + id,
+                        method: 'DELETE',
+                        data: {
+                            id: id,
+                            // _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(res) {
+                            if (res.status == 'success') {
+                                $('.table').load(location.href + ' .table');
+                            }
+                        },
+                        error: function(err) {
+                            let error = err.responseJSON;
+                            $.each(error.errors, function(index, value) {
+                                $('#errMsgContainer').append('<span class="text-red-600">' + value + '</span><br>')
+                            })
+                        }
+                    })
+                }
+
             });
         });
     </script>
