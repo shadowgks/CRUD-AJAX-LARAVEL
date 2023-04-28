@@ -134,7 +134,7 @@
 
                 $.ajax({
                     url: "{{ route('products.store') }}",
-                    method: 'Post',
+                    method: 'POST',
                     data: {
                         name: name,
                         price: price
